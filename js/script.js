@@ -86,7 +86,7 @@ function running() {
   // image(flippedVideo, 0, 0, width, height);
 
   // Use this line to just see a black background. More theatrical!
-  background(0);
+  background(250, 200, 200);
 
   // Check if there currently predictions to display
   if (predictions.length > 0) {
