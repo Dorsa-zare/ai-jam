@@ -14,20 +14,32 @@ let handpose;
 // The current set of predictions made by Handpose once it's running
 let predictions = [];
 
-// The bubble we will be popping
-let bubble;
-// The pin
-let pin = {
+// The cloud 
+let cloud;
+
+// The bird
+let bird = {
   tip: {
     x: undefined,
     y: undefined
   },
   head: {
     x: undefined,
-    y: undefined,
-    size: 20
+    y: undefined
   }
 };
+
+
+// Variable to hold the cloud image
+let cloudImg;
+// Variable to hold the cloud image
+let birdImg;
+
+function preload() {
+  // Load the cloud image
+  cloudImg = loadImage('assets/images/cloud.png');
+  birdImg = loadImage('assets/images/bird.png');
+}
 
 function setup() {
   createCanvas(640, 480);
@@ -39,28 +51,20 @@ function setup() {
   // Start the Handpose model and switch to our running state when it loads
   handpose = ml5.handpose(video, {
     flipHorizontal: true
-  }, function() {
+  }, function () {
     // Switch to the running state
     state = `running`;
   });
 
   // Listen for prediction events from Handpose and store the results in our
   // predictions array when they occur
-  handpose.on(`predict`, function(results) {
+  handpose.on(`predict`, function (results) {
     predictions = results;
   });
 
-  // Create our basic bubble
-  bubble = {
-    x: random(width),
-    y: height,
-    size: 100,
-    vx: 0,
-    vy: -2
-  }
+  // Create our basic cloud
+  resetCloud();
 }
-
-
 
 function draw() {
   if (state === `loading`) {
@@ -86,92 +90,86 @@ function running() {
   // image(flippedVideo, 0, 0, width, height);
 
   // Use this line to just see a black background. More theatrical!
-  background(250, 200, 200);
+  background(158, 206, 232);
 
   // Check if there currently predictions to display
   if (predictions.length > 0) {
     // If yes, then get the positions of the tip and base of the index finger
-    updatePin(predictions[0]);
+    updateBird(predictions[0]);
 
-    // Check if the tip of the "pin" is touching the bubble
-    let d = dist(pin.tip.x, pin.tip.y, bubble.x, bubble.y);
-    if (d < bubble.size / 2) {
+    // Check if the tip of the "bird" is touching the cloud
+    let d = dist(bird.tip.x, bird.tip.y, cloud.x, cloud.y);
+    if (d < cloud.size / 2) {
       // Pop!
-      resetBubble();
+      resetCloud();
     }
-    // Display the current position of the pin
-    displayPin();
+    // Display the current position of the bird
+    displayBird();
   }
 
-  // Handle the bubble's movement and display (independent of hand detection
+  // Handle the cloud's movement and display (independent of hand detection
   // so it doesn't need to be inside the predictions check)
-  moveBubble();
+  moveCloud();
   checkOutOfBounds();
-  displayBubble();
+  displayCloud();
 }
 
 /**
-Updates the position of the pin according to the latest prediction
+Updates the position of the bird according to the latest prediction
 */
-function updatePin(prediction) {
-  pin.tip.x = prediction.annotations.indexFinger[3][0];
-  pin.tip.y = prediction.annotations.indexFinger[3][1];
-  pin.head.x = prediction.annotations.indexFinger[0][0];
-  pin.head.y = prediction.annotations.indexFinger[0][1];
+function updateBird(prediction) {
+  bird.tip.x = prediction.annotations.indexFinger[3][0];
+  bird.tip.y = prediction.annotations.indexFinger[3][1];
+  bird.head.x = prediction.annotations.indexFinger[0][0];
+  bird.head.y = prediction.annotations.indexFinger[0][1];
 }
 
 /**
-Resets the bubble to the bottom of the screen in a new x position
+Resets the cloud to the bottom of the screen in a new x position
 */
-function resetBubble() {
-  bubble.x = random(width);
-  bubble.y = height;
+function resetCloud() {
+  cloud = {
+    x: width,
+    y: random(height),
+    size: 150,
+    vx: -3, // Move from right to left
+    vy: 0
+  };
 }
 
 /**
-Moves the bubble according to its velocity
+Moves the cloud according to its velocity
 */
-function moveBubble() {
-  bubble.x += bubble.vx;
-  bubble.y += bubble.vy;
+function moveCloud() {
+  cloud.x += cloud.vx;
+  cloud.y += cloud.vy;
 }
 
 /**
-Resets the bubble if it moves off the top of the canvas
+Resets the cloud if it moves off the left side of the canvas
 */
 function checkOutOfBounds() {
-  if (bubble < 0) {
-    resetBubble();
+  if (cloud.x + cloud.size / 2 < 0) {
+    resetCloud();
   }
 }
 
 /**
-Displays the bubble as a circle
+Displays the cloud as a cloud
 */
-function displayBubble() {
-  push();
-  noStroke();
-  fill(100, 100, 200, 150);
-  ellipse(bubble.x, bubble.y, bubble.size);
-  pop();
+function displayCloud() {
+  // Draw the cloud image at the cloud's position
+  image(cloudImg, cloud.x - cloud.size / 2, cloud.y - cloud.size / 2, cloud.size, cloud.size);
 }
 
 /**
-Displays the pin based on the tip and base coordinates. Draws
-a line between them and adds a red pinhead.
+Displays the bird based on the tip and base coordinates. 
 */
-function displayPin() {
-  // Draw pin
+function displayBird() {
+  // Draw bird
   push();
-  stroke(255);
-  strokeWeight(2);
-  line(pin.tip.x, pin.tip.y, pin.head.x, pin.head.y);
-  pop();
-
-  // Draw pinhead
-  push();
-  fill(255, 0, 0);
-  noStroke();
-  ellipse(pin.head.x, pin.head.y, pin.head.size);
+  // Center the bird image at the tip of the finger
+  imageMode(CENTER);
+  image(birdImg, bird.tip.x, bird.tip.y, 50, 50); // Adjust the size of the bird as needed
   pop();
 }
