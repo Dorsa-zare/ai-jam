@@ -1,87 +1,177 @@
 // AI jam
 // Dorsa Zare
 
-// The user's webcam
-let video = undefined;
-// The handpose model
-let handpose = undefined;
-// The current set of predictions
+"use strict";
+
+// Current state of program
+let state = `loading`; // loading, running
+// User's webcam
+let video;
+// The name of our model
+let modelName = `Handpose`;
+// Handpose object (using the name of the model for clarity)
+let handpose;
+// The current set of predictions made by Handpose once it's running
 let predictions = [];
-//The bubble
-let bubble = undefined;
+
+// The bubble we will be popping
+let bubble;
+// The pin
+let pin = {
+  tip: {
+    x: undefined,
+    y: undefined
+  },
+  head: {
+    x: undefined,
+    y: undefined,
+    size: 20
+  }
+};
 
 function setup() {
   createCanvas(640, 480);
 
-  // Access user's webcam
+  // Start webcam and hide the resulting HTML element
   video = createCapture(VIDEO);
   video.hide();
 
-  // Load the handpose model
+  // Start the Handpose model and switch to our running state when it loads
   handpose = ml5.handpose(video, {
     flipHorizontal: true
-  }, function () {
-    console.log(`Model loaded.`)
+  }, function() {
+    // Switch to the running state
+    state = `running`;
   });
 
-  // Listen for predictions
-  handpose.on(`predict`, function (results) {
+  // Listen for prediction events from Handpose and store the results in our
+  // predictions array when they occur
+  handpose.on(`predict`, function(results) {
     predictions = results;
   });
 
-  // Our bubble
+  // Create our basic bubble
   bubble = {
     x: random(width),
     y: height,
     size: 100,
     vx: 0,
     vy: -2
-  };
+  }
 }
 
 
+
 function draw() {
+  if (state === `loading`) {
+    loading();
+  }
+  else if (state === `running`) {
+    running();
+  }
+}
+
+function loading() {
+  push();
+  textSize(32);
+  textStyle(BOLD);
+  textAlign(CENTER, CENTER);
+  text(`Loading ${modelName}...`, width / 2, height / 2);
+  pop();
+}
+
+function running() {
+  // Use these lines to see the video feed
+  // const flippedVideo = ml5.flipImage(video);
+  // image(flippedVideo, 0, 0, width, height);
+
+  // Use this line to just see a black background. More theatrical!
   background(0);
 
-  // Check if there are any predictions
+  // Check if there currently predictions to display
   if (predictions.length > 0) {
-    let hand = predictions[0];
-    let index = hand.annotations.indexFinger;
-    let tip = index[3];
-    let base = index[0];
-    let tipX = tip[0];
-    let tipY = tip[1];
-    let baseX = base[0];
-    let baseY = base[1];
+    // If yes, then get the positions of the tip and base of the index finger
+    updatePin(predictions[0]);
 
-    push();
-    noFill();
-    stroke(255, 255, 255)
-    strokeWeight(2);
-    line(baseX, baseY, tipX, tipY)
-    pop();
-
-    //pin head
-    push();
-    noStroke();
-    fill(255, 0, 0);
-    ellipse(baseX, baseY, 20)
-    pop();
+    // Check if the tip of the "pin" is touching the bubble
+    let d = dist(pin.tip.x, pin.tip.y, bubble.x, bubble.y);
+    if (d < bubble.size / 2) {
+      // Pop!
+      resetBubble();
+    }
+    // Display the current position of the pin
+    displayPin();
   }
 
-  // Move bubble
+  // Handle the bubble's movement and display (independent of hand detection
+  // so it doesn't need to be inside the predictions check)
+  moveBubble();
+  checkOutOfBounds();
+  displayBubble();
+}
+
+/**
+Updates the position of the pin according to the latest prediction
+*/
+function updatePin(prediction) {
+  pin.tip.x = prediction.annotations.indexFinger[3][0];
+  pin.tip.y = prediction.annotations.indexFinger[3][1];
+  pin.head.x = prediction.annotations.indexFinger[0][0];
+  pin.head.y = prediction.annotations.indexFinger[0][1];
+}
+
+/**
+Resets the bubble to the bottom of the screen in a new x position
+*/
+function resetBubble() {
+  bubble.x = random(width);
+  bubble.y = height;
+}
+
+/**
+Moves the bubble according to its velocity
+*/
+function moveBubble() {
   bubble.x += bubble.vx;
   bubble.y += bubble.vy;
+}
 
-  if (bubble.y < 0) {
-    bubble.x = random(width);
-    bubble.y = height;
+/**
+Resets the bubble if it moves off the top of the canvas
+*/
+function checkOutOfBounds() {
+  if (bubble < 0) {
+    resetBubble();
   }
+}
 
+/**
+Displays the bubble as a circle
+*/
+function displayBubble() {
   push();
-  fill(0, 100, 200);
   noStroke();
-  ellipse(bubble.x, buble.y, bubble.size)
+  fill(100, 100, 200, 150);
+  ellipse(bubble.x, bubble.y, bubble.size);
+  pop();
+}
+
+/**
+Displays the pin based on the tip and base coordinates. Draws
+a line between them and adds a red pinhead.
+*/
+function displayPin() {
+  // Draw pin
+  push();
+  stroke(255);
+  strokeWeight(2);
+  line(pin.tip.x, pin.tip.y, pin.head.x, pin.head.y);
   pop();
 
+  // Draw pinhead
+  push();
+  fill(255, 0, 0);
+  noStroke();
+  ellipse(pin.head.x, pin.head.y, pin.head.size);
+  pop();
 }
