@@ -100,9 +100,18 @@ function running() {
     // Check if the tip of the "bird" is touching the cloud
     let d = dist(bird.tip.x, bird.tip.y, cloud.x, cloud.y);
     if (d < cloud.size / 2) {
-      // Pop!
-      resetCloud();
-    }
+      // Move the bird down and to the left
+      bird.tip.x -= 10; // Move to the left
+      bird.tip.y += 5; // Move down
+      bird.head.x -= 10; // Move to the left
+      bird.head.y += 5; // Move down
+    // Log a message to the console indicating the collision
+    console.log("Bird collided with the cloud!");
+  } else if (bird.tip.y < height - 50) {
+    // Adjust the speed of the falling bird
+    bird.tip.y += 2;
+    bird.head.y += 2;
+  }
     // Display the current position of the bird
     displayBird();
   }
@@ -113,6 +122,7 @@ function running() {
   checkOutOfBounds();
   displayCloud();
 }
+
 
 /**
 Updates the position of the bird according to the latest prediction
@@ -170,6 +180,6 @@ function displayBird() {
   push();
   // Center the bird image at the tip of the finger
   imageMode(CENTER);
-  image(birdImg, bird.tip.x, bird.tip.y, 50, 50); // Adjust the size of the bird as needed
+  image(birdImg, bird.tip.x, bird.tip.y, 100, 100); // Adjust the size of the bird as needed
   pop();
 }
