@@ -42,7 +42,7 @@ function preload() {
 }
 
 function setup() {
-  createCanvas(640, 480);
+  createCanvas(700, 500);
 
   // Start webcam and hide the resulting HTML element
   video = createCapture(VIDEO);
