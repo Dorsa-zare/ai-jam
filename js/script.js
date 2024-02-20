@@ -100,21 +100,22 @@ function running() {
     // Check if the tip of the "bird" is touching the cloud
     let d = dist(bird.tip.x, bird.tip.y, cloud.x, cloud.y);
     if (d < cloud.size / 2) {
-      // Move the bird down and to the left
-      bird.tip.x -= 10; // Move to the left
+      // Log a message to the console indicating the collision
+      console.log("Bird collided with the cloud!");
+      
+      // Move the bird down
       bird.tip.y += 5; // Move down
-      bird.head.x -= 10; // Move to the left
       bird.head.y += 5; // Move down
-    // Log a message to the console indicating the collision
-    console.log("Bird collided with the cloud!");
-  } else if (bird.tip.y < height - 50) {
-    // Adjust the speed of the falling bird
-    bird.tip.y += 2;
-    bird.head.y += 2;
-  }
+    } else {
+      // Adjust the speed of the falling bird
+      bird.tip.y += 2;
+      bird.head.y += 2;
+    }
+
     // Display the current position of the bird
     displayBird();
   }
+
 
   // Handle the cloud's movement and display (independent of hand detection
   // so it doesn't need to be inside the predictions check)
