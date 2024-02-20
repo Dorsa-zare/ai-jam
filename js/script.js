@@ -26,7 +26,8 @@ let bird = {
   head: {
     x: undefined,
     y: undefined
-  }
+  },
+  alive: true
 };
 
 
@@ -89,33 +90,28 @@ function running() {
   // const flippedVideo = ml5.flipImage(video);
   // image(flippedVideo, 0, 0, width, height);
 
-  // Use this line to just see a black background. More theatrical!
   background(158, 206, 232);
 
-  // Check if there currently predictions to display
-  if (predictions.length > 0) {
-    // If yes, then get the positions of the tip and base of the index finger
-    updateBird(predictions[0]);
+  if (bird.alive) {
+    // Check if there currently predictions to display
+    if (predictions.length > 0) {
+      // If yes, then get the positions of the tip and base of the index finger
+      updateBird(predictions[0]);
 
-    // Check if the tip of the "bird" is touching the cloud
-    let d = dist(bird.tip.x, bird.tip.y, cloud.x, cloud.y);
-    if (d < cloud.size / 2) {
-      // Log a message to the console indicating the collision
-      console.log("Bird collided with the cloud!");
-      
-      // Move the bird down
-      bird.tip.y += 5; // Move down
-      bird.head.y += 5; // Move down
-    } else {
-      // Adjust the speed of the falling bird
-      bird.tip.y += 2;
-      bird.head.y += 2;
-    }
-
-    // Display the current position of the bird
-    displayBird();
+      // Check if the tip of the "bird" is touching the cloud
+      let d = dist(bird.tip.x, bird.tip.y, cloud.x, cloud.y);
+      if (d < cloud.size / 2) {
+        bird.alive = false;
+        console.log("Bird collided with the cloud!");
+      }
+    } 
+  } else {
+    bird.tip.y += 5;
+    bird.head.y += 7;
   }
 
+ // Display the current position of the bird
+ displayBird();
 
   // Handle the cloud's movement and display (independent of hand detection
   // so it doesn't need to be inside the predictions check)
@@ -136,7 +132,7 @@ function updateBird(prediction) {
 }
 
 /**
-Resets the cloud to the bottom of the screen in a new x position
+Resets the cloud 
 */
 function resetCloud() {
   cloud = {
@@ -174,13 +170,13 @@ function displayCloud() {
 }
 
 /**
-Displays the bird based on the tip and base coordinates. 
+Displays the bird based on the finger tip coordinates. 
 */
 function displayBird() {
   // Draw bird
   push();
   // Center the bird image at the tip of the finger
   imageMode(CENTER);
-  image(birdImg, bird.tip.x, bird.tip.y, 100, 100); // Adjust the size of the bird as needed
+  image(birdImg, bird.tip.x, bird.tip.y, 100, 100);
   pop();
 }
