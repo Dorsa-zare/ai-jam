@@ -3,80 +3,80 @@
 
 "use strict";
 
-// Current state of program
-let state = `loading`; // loading, running
-// User's webcam
-let video;
-// The name of our model
-let modelName = `Handpose`;
-// Handpose object (using the name of the model for clarity)
-let handpose;
-// The current set of predictions made by Handpose once it's running
-let predictions = [];
 
-// The cloud 
+
+// Global Variables
+let state = `loading`; // Program state: loading, running
+let video; // User's webcam
+let modelName = `Handpose`; // Name of the model
+let handpose; // Handpose object
+let predictions = []; // Predictions made by Handpose
+
+// Cloud
 let cloud;
 
-// The bird
+// Bird
 let bird = {
-  tip: {
-    x: undefined,
-    y: undefined
-  },
-  head: {
-    x: undefined,
-    y: undefined
-  },
+  tip: { x: undefined, y: undefined },
+  head: { x: undefined, y: undefined },
   alive: true
 };
 
-
-// Variable to hold the cloud image
+// Images
 let cloudImg;
-// Variable to hold the cloud image
 let birdImg;
+let balloonImg;
 
+// Balloon
+let balloon = {
+  x: undefined,
+  y: undefined,
+  size: 200,
+  vx: 0, // No horizontal movement
+  vy: -2 // Move upward
+};
+
+
+// Preload function to load images
 function preload() {
-  // Load the cloud image
   cloudImg = loadImage('assets/images/cloud.png');
   birdImg = loadImage('assets/images/bird.png');
+  balloonImg = loadImage('assets/images/balloon.png');
 }
 
+// Setup function
 function setup() {
   createCanvas(700, 500);
+  video = createCapture(VIDEO); // Start webcam
+  video.hide(); // Hide the video element
 
-  // Start webcam and hide the resulting HTML element
-  video = createCapture(VIDEO);
-  video.hide();
-
-  // Start the Handpose model and switch to our running state when it loads
-  handpose = ml5.handpose(video, {
-    flipHorizontal: true
-  }, function () {
-    // Switch to the running state
-    state = `running`;
+  // Initialize Handpose model
+  handpose = ml5.handpose(video, { flipHorizontal: true }, () => {
+    state = `title`; // Switch to title state when model loads
   });
 
-  // Listen for prediction events from Handpose and store the results in our
-  // predictions array when they occur
-  handpose.on(`predict`, function (results) {
-    predictions = results;
+  handpose.on(`predict`, results => {
+    predictions = results; // Store predictions when they occur
   });
 
-  // Create our basic cloud
-  resetCloud();
+  resetCloud(); // Create cloud
+  resetBalloon(); // Create balloon
 }
 
+// Draw function
 function draw() {
   if (state === `loading`) {
-    loading();
-  }
-  else if (state === `running`) {
-    running();
+    loading(); // Display loading screen
+  } else if (state === `title`) {
+    title(); // Display title screen
+  } else if (state === `running`) {
+    running(); // Run the program
   }
 }
 
+// Loading screen function
 function loading() {
+  background(158, 206, 232); // Set background color
   push();
   textSize(32);
   textStyle(BOLD);
@@ -85,45 +85,70 @@ function loading() {
   pop();
 }
 
+// Title screen function
+function title() {
+  background(158, 206, 232); // Set background color
+  push();
+  textSize(32);
+  textAlign(CENTER, CENTER);
+  fill(0); // Set text color to black
+  text("Welcome to Handpose Bird", width / 2, height / 2 - 120);
+  textSize(18);
+  text("Use your index finger to control the bird and dodge obstacles in the sky.", width / 2, height / 2 + 40);
+  text("Click anywhere to start", width / 2, height / 2 + 100);
+  image(birdImg, width / 2 - 50, height / 2 - 100, 100, 100);
+  pop();
+
+
+}
+
+// Main program function
 function running() {
-  // Use these lines to see the video feed
-  // const flippedVideo = ml5.flipImage(video);
-  // image(flippedVideo, 0, 0, width, height);
+  background(158, 206, 232); // Set background color
 
-  background(158, 206, 232);
-
+  // Check if the bird is alive
   if (bird.alive) {
-    // Check if there currently predictions to display
+    // Check for hand predictions
     if (predictions.length > 0) {
-      // If yes, then get the positions of the tip and base of the index finger
-      updateBird(predictions[0]);
+      updateBird(predictions[0]); // Update bird position based on hand pose
 
-      // Check if the tip of the "bird" is touching the cloud
+      // Check for collision with cloud
       let d = dist(bird.tip.x, bird.tip.y, cloud.x, cloud.y);
       if (d < cloud.size / 2) {
-        bird.alive = false;
-        console.log("Bird collided with the cloud!");
+        bird.alive = false; // Set bird to not alive if it collides with cloud
       }
-    } 
+    }
   } else {
-    bird.tip.y += 5;
-    bird.head.y += 7;
+    bird.tip.y += 5; // Move bird down if not alive
+
+    // Display "Game Over" text if bird falls off screen
+    if (bird.tip.y > height) {
+      push();
+      textSize(64);
+      fill(255, 0, 0); // Red color
+      textAlign(CENTER, CENTER);
+      text("Game Over", width / 2, height / 2);
+      pop();
+    }
   }
 
- // Display the current position of the bird
- displayBird();
+  // Display bird
+  displayBird();
 
-  // Handle the cloud's movement and display (independent of hand detection
-  // so it doesn't need to be inside the predictions check)
+  // Move and display cloud
   moveCloud();
-  checkOutOfBounds();
   displayCloud();
+
+  // Move and display balloon
+  moveBalloon();
+  displayBalloon();
+
+  // Check for balloon collision
+  checkBalloonCollision();
 }
 
 
-/**
-Updates the position of the bird according to the latest prediction
-*/
+// Function to update bird position based on hand prediction
 function updateBird(prediction) {
   bird.tip.x = prediction.annotations.indexFinger[3][0];
   bird.tip.y = prediction.annotations.indexFinger[3][1];
@@ -131,52 +156,74 @@ function updateBird(prediction) {
   bird.head.y = prediction.annotations.indexFinger[0][1];
 }
 
-/**
-Resets the cloud 
-*/
+// Function to reset cloud position
 function resetCloud() {
   cloud = {
     x: width,
     y: random(height),
     size: 150,
-    vx: -3, // Move from right to left
+    vx: -3,
     vy: 0
   };
 }
 
-/**
-Moves the cloud according to its velocity
-*/
+
+// Function to move cloud
 function moveCloud() {
   cloud.x += cloud.vx;
   cloud.y += cloud.vy;
-}
 
-/**
-Resets the cloud if it moves off the left side of the canvas
-*/
-function checkOutOfBounds() {
+  // Reset cloud if it moves off screen
   if (cloud.x + cloud.size / 2 < 0) {
     resetCloud();
   }
 }
 
-/**
-Displays the cloud as a cloud
-*/
+// Function to display cloud
 function displayCloud() {
-  // Draw the cloud image at the cloud's position
   image(cloudImg, cloud.x - cloud.size / 2, cloud.y - cloud.size / 2, cloud.size, cloud.size);
 }
 
-/**
-Displays the bird based on the finger tip coordinates. 
-*/
+// Function to display bird
 function displayBird() {
-  // Draw bird
   push();
-  // Center the bird image at the tip of the finger
   imageMode(CENTER);
   image(birdImg, bird.tip.x, bird.tip.y, 100, 100);
   pop();
+}
+
+// Function to reset balloon position
+function resetBalloon() {
+  balloon.x = random(width);
+  balloon.y = height;
+}
+
+// Function to move balloon
+function moveBalloon() {
+  balloon.y += balloon.vy;
+
+  // Reset balloon if it reaches top of screen
+  if (balloon.y < -balloon.size / 2) {
+    resetBalloon();
+  }
+}
+
+// Function to display balloon
+function displayBalloon() {
+  image(balloonImg, balloon.x - balloon.size / 2, balloon.y - balloon.size / 2, balloon.size, balloon.size);
+}
+
+// Function to check for balloon collision
+function checkBalloonCollision() {
+  let d = dist(bird.tip.x, bird.tip.y, balloon.x, balloon.y);
+  if (d < balloon.size / 2) {
+    bird.alive = false; // Set bird to not alive if it collides with balloon
+  }
+}
+
+// Mouse pressed function
+function mousePressed() {
+  if (state === `title`) {
+    state = `running`; // Transition to running state when mouse is pressed on the title screen
+  }
 }
