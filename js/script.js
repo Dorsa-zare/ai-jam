@@ -4,13 +4,17 @@
 "use strict";
 
 
-
 // Global Variables
-let state = `loading`; // Program state: loading, running
+let state = `loading`; // Program state: loading, title, running
 let video; // User's webcam
 let modelName = `Handpose`; // Name of the model
 let handpose; // Handpose object
 let predictions = []; // Predictions made by Handpose
+
+// Images
+let cloudImg;
+let birdImg;
+let balloonImg;
 
 // Cloud
 let cloud;
@@ -21,11 +25,6 @@ let bird = {
   head: { x: undefined, y: undefined },
   alive: true
 };
-
-// Images
-let cloudImg;
-let birdImg;
-let balloonImg;
 
 // Balloon
 let balloon = {
@@ -125,7 +124,7 @@ function running() {
     if (bird.tip.y > height) {
       push();
       textSize(64);
-      fill(255, 0, 0); // Red color
+      fill(255, 50, 50); 
       textAlign(CENTER, CENTER);
       text("Game Over", width / 2, height / 2);
       pop();
