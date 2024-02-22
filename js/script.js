@@ -15,6 +15,7 @@ let predictions = []; // Predictions made by Handpose
 let cloudImg;
 let birdImg;
 let balloonImg;
+let airplaneImg;
 
 // Cloud
 let cloud;
@@ -35,12 +36,21 @@ let balloon = {
   vy: -2 // Move upward
 };
 
+// Plane
+let airplane = {
+  x: 0, // Starting position
+  y: 0,
+  size: 200,
+  speed: 10 // Speed of the airplane
+};
+
 
 // Preload function to load images
 function preload() {
   cloudImg = loadImage('assets/images/cloud.png');
   birdImg = loadImage('assets/images/bird.png');
   balloonImg = loadImage('assets/images/balloon.png');
+  airplaneImg = loadImage('assets/images/plane.png');
 }
 
 // Setup function
@@ -57,6 +67,10 @@ function setup() {
   handpose.on(`predict`, results => {
     predictions = results; // Store predictions when they occur
   });
+
+  // Initialize airplane's starting position
+  airplane.x = 0;
+  airplane.y = height;
 
   resetCloud(); // Create cloud
   resetBalloon(); // Create balloon
@@ -105,6 +119,19 @@ function title() {
 function running() {
   background(158, 206, 232); // Set background color
 
+  // Update airplane's position
+  airplane.x += airplane.speed;
+  airplane.y -= airplane.speed;
+
+  // Check if airplane reaches the opposite corner
+  if (airplane.x > width && airplane.y < 0) {
+    resetAirplane(); // Reset airplane's position
+  }
+
+  // Display airplane
+  image(airplaneImg, airplane.x, airplane.y, airplane.size, airplane.size);
+
+
   // Check if the bird is alive
   if (bird.alive) {
     // Check for hand predictions
@@ -124,7 +151,7 @@ function running() {
     if (bird.tip.y > height) {
       push();
       textSize(64);
-      fill(255, 50, 50); 
+      fill(255, 50, 50);
       textAlign(CENTER, CENTER);
       text("Game Over", width / 2, height / 2);
       pop();
@@ -161,7 +188,7 @@ function resetCloud() {
     x: width,
     y: random(height),
     size: 150,
-    vx: -3,
+    vx: -4,
     vy: 0
   };
 }
@@ -218,6 +245,12 @@ function checkBalloonCollision() {
   if (d < balloon.size / 2) {
     bird.alive = false; // Set bird to not alive if it collides with balloon
   }
+}
+
+// Function to reset airplane's position
+function resetAirplane() {
+  airplane.x = constrain(random(0, 300), 0, width - airplane.size); // Random X position constrained between 0 and 300
+  airplane.y = height;
 }
 
 // Mouse pressed function
