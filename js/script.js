@@ -50,7 +50,7 @@ let ufo = {
   x: 0, // Starting position
   y: 0,
   size: 120,
-  speed: 15 // Speed of the ufo
+  speed: 12 // Speed of the ufo
 };
 
 let titleState;
