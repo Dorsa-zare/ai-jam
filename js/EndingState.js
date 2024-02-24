@@ -10,9 +10,9 @@ class EndingState {
     display() {
         background(158, 206, 232); // Set background color
         push();
-        textSize(52);
+        textSize(50);
         textAlign(CENTER, CENTER);
-        fill(250, 110, 180); // Set text color 
+        fill(0); // Set text color 
         text("You won!", width / 2, height / 2); // Display "You won!" text
         pop();
 
