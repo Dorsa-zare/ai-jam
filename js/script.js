@@ -44,6 +44,12 @@ let airplane = {
   speed: 10 // Speed of the airplane
 };
 
+let titleState;
+let endingState;
+
+let startTime; // Variable to store the start time
+const gameDuration = 10000; // 10 seconds in milliseconds
+
 
 // Preload function to load images
 function preload() {
@@ -74,6 +80,19 @@ function setup() {
 
   resetCloud(); // Create cloud
   resetBalloon(); // Create balloon
+
+  titleState = new TitleState(); // Instantiate the TitleState class
+  endingState = new EndingState(); // Instantiate the EndingState class
+
+  // Check if the timer has started
+  if (!startTime) {
+    startTime = millis(); // Start the timer
+  }
+
+  // Check if 50 seconds have passed
+  if (millis() - startTime >= gameDuration && bird.alive) {
+    state = `ending`; // Transition to ending state
+  }
 }
 
 // Draw function
@@ -81,9 +100,11 @@ function draw() {
   if (state === `loading`) {
     loading(); // Display loading screen
   } else if (state === `title`) {
-    title(); // Display title screen
+    titleState.display(); // Display the title screen using the TitleState class
   } else if (state === `running`) {
     running(); // Run the program
+  } else if (state === `ending`) {
+    endingState.display(); // Display the ending screen using the endingstate class
   }
 }
 
@@ -96,23 +117,6 @@ function loading() {
   textAlign(CENTER, CENTER);
   text(`Loading ${modelName}...`, width / 2, height / 2);
   pop();
-}
-
-// Title screen function
-function title() {
-  background(158, 206, 232); // Set background color
-  push();
-  textSize(32);
-  textAlign(CENTER, CENTER);
-  fill(0); // Set text color to black
-  text("Welcome to Handpose Bird", width / 2, height / 2 - 120);
-  textSize(18);
-  text("Use your index finger to control the bird and dodge obstacles in the sky.", width / 2, height / 2 + 40);
-  text("Click anywhere to start", width / 2, height / 2 + 100);
-  image(birdImg, width / 2 - 50, height / 2 - 100, 100, 100);
-  pop();
-
-
 }
 
 // Main program function
@@ -154,7 +158,7 @@ function running() {
 
       // Check for collision with airplane
       let dAirplane = dist(bird.tip.x, bird.tip.y, airplane.x, airplane.y);
-      if (dAirplane < airplane.size / 2) {
+      if (dAirplane < airplane.size / 3) {
         bird.alive = false; // Set bird to not alive if it collides with airplane
         console.log("Bird collided with airplane!");
       }
@@ -265,7 +269,7 @@ function checkBalloonCollision() {
 
 // Function to reset airplane's position
 function resetAirplane() {
-  airplane.x = constrain(random(0, 300), 0, width - airplane.size); // Random X position constrained between 0 and 300
+  airplane.x = constrain(random(-100, 400), 0, width - airplane.size); // Random X position constrained between 0 and 300
   airplane.y = height;
 }
 
