@@ -139,13 +139,20 @@ function running() {
       updateBird(predictions[0]); // Update bird position based on hand pose
 
       // Check for collision with cloud
-      let d = dist(bird.tip.x, bird.tip.y, cloud.x, cloud.y);
-      if (d < cloud.size / 2) {
+      let dCloud = dist(bird.tip.x, bird.tip.y, cloud.x, cloud.y);
+      if (dCloud < cloud.size / 2) {
         bird.alive = false; // Set bird to not alive if it collides with cloud
+      }
+
+      // Check for collision with airplane
+      let dAirplane = dist(bird.tip.x, bird.tip.y, airplane.x, airplane.y);
+      if (dAirplane < airplane.size / 2) {
+        bird.alive = false; // Set bird to not alive if it collides with airplane
       }
     }
   } else {
     bird.tip.y += 5; // Move bird down if not alive
+
 
     // Display "Game Over" text if bird falls off screen
     if (bird.tip.y > height) {
