@@ -48,7 +48,7 @@ let titleState;
 let endingState;
 
 let startTime; // Variable to store the start time
-const gameDuration = 10000; // 10 seconds in milliseconds
+const gameDuration = 50000; // 50 seconds in milliseconds
 
 
 // Preload function to load images
@@ -87,11 +87,6 @@ function setup() {
   // Check if the timer has started
   if (!startTime) {
     startTime = millis(); // Start the timer
-  }
-
-  // Check if 50 seconds have passed
-  if (millis() - startTime >= gameDuration && bird.alive) {
-    state = `ending`; // Transition to ending state
   }
 }
 
@@ -197,6 +192,11 @@ function running() {
 
   // Check for balloon collision
   checkBalloonCollision();
+
+  // Check if the game duration has passed
+  if (millis() - startTime >= gameDuration && bird.alive) {
+    state = `ending`; // Transition to ending state
+  }
 }
 
 
@@ -214,7 +214,7 @@ function resetCloud() {
     x: width,
     y: random(height),
     size: 150,
-    vx: -4,
+    vx: -6,
     vy: 0
   };
 }
