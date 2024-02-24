@@ -48,7 +48,7 @@ let titleState;
 let endingState;
 
 let startTime; // Variable to store the start time
-const gameDuration = 30000; // 30 seconds in milliseconds
+const gameDuration = 50000; // 50 seconds in milliseconds
 
 
 // Preload function to load images
@@ -83,6 +83,9 @@ function setup() {
 
   titleState = new TitleState(); // Instantiate the TitleState class
   endingState = new EndingState(); // Instantiate the EndingState class
+
+  // Set the start time when the game starts
+  startTime = millis();
 
 
 }
