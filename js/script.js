@@ -158,13 +158,22 @@ function running() {
 
       // Check for collision with airplane
       let dAirplane = dist(bird.tip.x, bird.tip.y, airplane.x, airplane.y);
-      if (dAirplane < airplane.size / 3) {
+      if (dAirplane < airplane.size / 4) {
         bird.alive = false; // Set bird to not alive if it collides with airplane
         console.log("Bird collided with airplane!");
       }
     }
+    // Display bird
+    displayBird(); // Call displayBird() if the bird is alive
+
   } else {
-    bird.tip.y += 5; // Move bird down if not alive
+    push(); // Save the current drawing state
+    translate(bird.tip.x, bird.tip.y); // Move the origin to the bird's position
+    rotate(PI); // Rotate the bird by 180 degrees. Reference: https://p5js.org/reference/#/p5/rotate
+    imageMode(CENTER);
+    image(birdImg, 0, 0, 100, 100); // Display the rotated bird image
+    pop(); // Restore the previous drawing state
+    bird.tip.y += 7; // Move bird down if not alive
 
 
     // Display "Game Over" text if bird falls off screen
@@ -177,9 +186,6 @@ function running() {
       pop();
     }
   }
-
-  // Display bird
-  displayBird();
 
   // Move and display cloud
   moveCloud();
