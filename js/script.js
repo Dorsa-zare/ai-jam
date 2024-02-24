@@ -142,12 +142,21 @@ function running() {
       let dCloud = dist(bird.tip.x, bird.tip.y, cloud.x, cloud.y);
       if (dCloud < cloud.size / 2) {
         bird.alive = false; // Set bird to not alive if it collides with cloud
+        console.log("Bird collided with cloud!");
+      }
+
+      // Check for collision with balloon
+      let dBalloon = dist(bird.tip.x, bird.tip.y, balloon.x, balloon.y);
+      if (dBalloon < balloon.size / 2) {
+        bird.alive = false; // Set bird to not alive if it collides with balloon
+        console.log("Bird collided with balloon!");
       }
 
       // Check for collision with airplane
       let dAirplane = dist(bird.tip.x, bird.tip.y, airplane.x, airplane.y);
       if (dAirplane < airplane.size / 2) {
         bird.alive = false; // Set bird to not alive if it collides with airplane
+        console.log("Bird collided with airplane!");
       }
     }
   } else {
