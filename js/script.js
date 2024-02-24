@@ -48,7 +48,7 @@ let titleState;
 let endingState;
 
 let startTime; // Variable to store the start time
-const gameDuration = 50000; // 50 seconds in milliseconds
+const gameDuration = 30000; // 30 seconds in milliseconds
 
 
 // Preload function to load images
@@ -84,10 +84,7 @@ function setup() {
   titleState = new TitleState(); // Instantiate the TitleState class
   endingState = new EndingState(); // Instantiate the EndingState class
 
-  // Check if the timer has started
-  if (!startTime) {
-    startTime = millis(); // Start the timer
-  }
+
 }
 
 // Draw function
@@ -153,7 +150,7 @@ function running() {
 
       // Check for collision with airplane
       let dAirplane = dist(bird.tip.x, bird.tip.y, airplane.x, airplane.y);
-      if (dAirplane < airplane.size / 4) {
+      if (dAirplane < airplane.size / 8) {
         bird.alive = false; // Set bird to not alive if it collides with airplane
         console.log("Bird collided with airplane!");
       }
