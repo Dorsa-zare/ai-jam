@@ -1,3 +1,3 @@
 # Template p5 project
 
-This is the README file for the entire project. For more official projects you should write information here about the nature of the project, your name, any special explanations of how the project works, etc.
+"Rush Hour in the Sky" is a fast-paced game where players control a bird using hand gestures captured by a webcam. The goal is to avoid obstacles and survive for as long as possible. 
