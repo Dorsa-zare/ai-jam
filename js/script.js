@@ -32,7 +32,7 @@ let bird = {
 let balloon = {
   x: undefined,
   y: undefined,
-  size: 160,
+  size: 170,
   vx: 0, // No horizontal movement
   vy: -6 // Move upward
 };
@@ -41,7 +41,7 @@ let balloon = {
 let airplane = {
   x: 0, // Starting position
   y: 0,
-  size: 150,
+  size: 160,
   speed: 6 // Speed of the airplane
 };
 
@@ -49,7 +49,7 @@ let airplane = {
 let ufo = {
   x: 0, // Starting position
   y: 0,
-  size: 100,
+  size: 120,
   speed: 7 // Speed of the ufo
 };
 
@@ -124,28 +124,26 @@ function loading() {
 function running() {
   // Set the start time when the game starts
   startTime = startTime || millis();
-
   state = 'running'; // Ensure that the state is set to running
 
   background(158, 206, 232); // Set background color
-
-  // Check if 3 seconds have passed since the game started
-  if (millis() - startTime >= 2000) {
-    // Once 3 seconds have passed, start displaying and moving the obstacles
-    // Check for collisions
-    checkCollisions();
-    // Display bird
-    if (bird.alive) {
-      // Check for hand predictions
-      if (predictions.length > 0) {
-        updateBird(predictions[0]); // Update bird position based on hand pose
-      }
-      // Display bird
-      displayBird();
-    } else {
-      gameOver();
+  // Check for collisions
+  checkCollisions();
+  // Display bird
+  if (bird.alive) {
+    // Check for hand predictions
+    if (predictions.length > 0) {
+      updateBird(predictions[0]); // Update bird position based on hand pose
     }
+    // Display bird
+    displayBird();
+  } else {
+    gameOver();
+  }
 
+  // Check if 2 seconds have passed since the game started
+  if (millis() - startTime >= 2000) {
+    // Once 2 seconds have passed, start displaying and moving the obstacles
     // move and display Airplane
     moveAirplane();
     displayAirplane();
