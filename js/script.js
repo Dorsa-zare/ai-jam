@@ -34,7 +34,7 @@ let balloon = {
   y: undefined,
   size: 170,
   vx: 0, // No horizontal movement
-  vy: -6 // Move upward
+  vy: -7 // Move upward
 };
 
 // Plane
@@ -50,7 +50,7 @@ let ufo = {
   x: 0, // Starting position
   y: 0,
   size: 120,
-  speed: 7 // Speed of the ufo
+  speed: 8 // Speed of the ufo
 };
 
 let titleState;
@@ -178,7 +178,7 @@ function resetCloud() {
   cloud = {
     x: width,
     y: random(height),
-    size: 120,
+    size: 130,
     vx: -6,
     vy: 0
   };
