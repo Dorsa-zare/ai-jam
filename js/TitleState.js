@@ -3,7 +3,7 @@ class TitleState {
     }
 
     display() {
-        background(158, 206, 232); // Set background color
+        background(158, 206, 232); // Set background color to blue
         push();
         textSize(32);
         textAlign(CENTER, CENTER);
@@ -12,7 +12,7 @@ class TitleState {
         textSize(18);
         text("Use your index finger to control the bird and dodge obstacles in the sky.", width / 2, height / 2 + 60);
 
-        fill(255); // Set text color to black
+        fill(255); // Set text color to white
         text("Click anywhere to start", width / 2, height / 2 + 150);
 
         // Images

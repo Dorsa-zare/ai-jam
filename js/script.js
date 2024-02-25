@@ -56,10 +56,10 @@ let ufo = {
   speed: 8 // Speed of the ufo
 };
 
-let titleState;
-let endingState;
+let titleState; //Title class
+let endingState; //Ending class
 
-let startTime; // Variable to store the start time
+let startTime; //The start time
 const gameDuration = 40000; // 40 seconds in milliseconds
 
 
@@ -141,12 +141,12 @@ function running() {
     // Display bird
     displayBird();
   } else {
+    //Display Game over text
     gameOver();
   }
 
   // Check if 2 seconds have passed since the game started
   if (millis() - startTime >= 2000) {
-    // Once 2 seconds have passed, start displaying and moving the obstacles
     // move and display Airplane
     moveAirplane();
     displayAirplane();
