@@ -32,7 +32,7 @@ let bird = {
 let balloon = {
   x: undefined,
   y: undefined,
-  size: 200,
+  size: 160,
   vx: 0, // No horizontal movement
   vy: -6 // Move upward
 };
@@ -41,16 +41,16 @@ let balloon = {
 let airplane = {
   x: 0, // Starting position
   y: 0,
-  size: 190,
-  speed: 8 // Speed of the airplane
+  size: 150,
+  speed: 6 // Speed of the airplane
 };
 
 // UFO
 let ufo = {
   x: 0, // Starting position
   y: 0,
-  size: 120,
-  speed: 9 // Speed of the ufo
+  size: 100,
+  speed: 7 // Speed of the ufo
 };
 
 let titleState;
@@ -180,8 +180,8 @@ function resetCloud() {
   cloud = {
     x: width,
     y: random(height),
-    size: 150,
-    vx: -8,
+    size: 120,
+    vx: -6,
     vy: 0
   };
 }
