@@ -34,7 +34,7 @@ let balloon = {
   y: undefined,
   size: 200,
   vx: 0, // No horizontal movement
-  vy: -8 // Move upward
+  vy: -6 // Move upward
 };
 
 // Plane
@@ -42,7 +42,7 @@ let airplane = {
   x: 0, // Starting position
   y: 0,
   size: 190,
-  speed: 10 // Speed of the airplane
+  speed: 8 // Speed of the airplane
 };
 
 // UFO
@@ -50,7 +50,7 @@ let ufo = {
   x: 0, // Starting position
   y: 0,
   size: 120,
-  speed: 12 // Speed of the ufo
+  speed: 9 // Speed of the ufo
 };
 
 let titleState;
@@ -129,36 +129,40 @@ function running() {
 
   background(158, 206, 232); // Set background color
 
-  // Check for collisions
-  checkCollisions();
-  // Display bird
-  if (bird.alive) {
-    // Check for hand predictions
-    if (predictions.length > 0) {
-      updateBird(predictions[0]); // Update bird position based on hand pose
-    }
+  // Check if 3 seconds have passed since the game started
+  if (millis() - startTime >= 2000) {
+    // Once 3 seconds have passed, start displaying and moving the obstacles
+    // Check for collisions
+    checkCollisions();
     // Display bird
-    displayBird();
-  } else {
-    gameOver();
-  }
+    if (bird.alive) {
+      // Check for hand predictions
+      if (predictions.length > 0) {
+        updateBird(predictions[0]); // Update bird position based on hand pose
+      }
+      // Display bird
+      displayBird();
+    } else {
+      gameOver();
+    }
 
-  // move and display Airplane
-  moveAirplane();
-  displayAirplane();
-  // Move and display cloud
-  moveCloud();
-  displayCloud();
-  // Move and display balloon
-  moveBalloon();
-  displayBalloon();
-  // Move and display UFO
-  moveUFO();
-  displayUFO();
+    // move and display Airplane
+    moveAirplane();
+    displayAirplane();
+    // Move and display cloud
+    moveCloud();
+    displayCloud();
+    // Move and display balloon
+    moveBalloon();
+    displayBalloon();
+    // Move and display UFO
+    moveUFO();
+    displayUFO();
 
-  // Check if the game duration has passed and the bird is alive
-  if (millis() - startTime >= gameDuration && bird.alive) {
-    state = `ending`; // Transition to ending state
+    // Check if the game duration has passed and the bird is alive
+    if (millis() - startTime >= gameDuration && bird.alive) {
+      state = `ending`; // Transition to ending state
+    }
   }
 }
 
